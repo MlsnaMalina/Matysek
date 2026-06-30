@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist } from 'next/font/google'
 import './globals.css'
+import InstallPrompt from '@/components/InstallPrompt'
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist-sans' })
 
@@ -8,6 +9,10 @@ export const metadata: Metadata = {
   title: 'Matýsek',
   description: 'Tracker logopedické a fyzioterapeutické péče',
   manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.svg',
+    apple: '/icon-192.png',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -26,7 +31,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="cs" className={`${geist.variable} h-full`}>
-      <body className="h-full bg-white">{children}</body>
+      <body className="h-full bg-white">
+        {children}
+        <InstallPrompt />
+      </body>
     </html>
   )
 }
