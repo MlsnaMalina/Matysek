@@ -14,6 +14,7 @@ export default function NovaSchuzeLogopedie() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [tasks, setTasks] = useState<string[]>([''])
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   function addTask() { setTasks(prev => [...prev, '']) }
   function removeTask(i: number) { setTasks(prev => prev.filter((_, idx) => idx !== i)) }
@@ -22,22 +23,37 @@ export default function NovaSchuzeLogopedie() {
   async function save() {
     const validTasks = tasks.map(t => t.trim()).filter(Boolean)
     setSaving(true)
+    setError(null)
 
-    const { data: session, error } = await supabase
-      .from('sessions')
-      .insert({ module: 'logopedie', date })
-      .select()
-      .single()
+    try {
+      const { data: session, error } = await supabase
+        .from('sessions')
+        .insert({ module: 'logopedie', date })
+        .select()
+        .single()
 
-    if (error || !session) { setSaving(false); return }
+      if (error) {
+        setError(`Chyba: ${error.message}`)
+        setSaving(false)
+        return
+      }
+      if (!session) {
+        setError('Schůzku se nepodařilo uložit.')
+        setSaving(false)
+        return
+      }
 
-    if (validTasks.length > 0) {
-      await supabase.from('tasks').insert(
-        validTasks.map((title, order_index) => ({ session_id: session.id, title, order_index }))
-      )
+      if (validTasks.length > 0) {
+        await supabase.from('tasks').insert(
+          validTasks.map((title, order_index) => ({ session_id: session.id, title, order_index }))
+        )
+      }
+
+      router.push('/logopedie')
+    } catch (e) {
+      setError(`Neočekávaná chyba: ${e instanceof Error ? e.message : String(e)}`)
+      setSaving(false)
     }
-
-    router.push('/logopedie')
   }
 
   return (
@@ -98,6 +114,12 @@ export default function NovaSchuzeLogopedie() {
             Nahrávání hlasu bude dostupné v další verzi. Zatím si zapiš úkoly ručně výše.
           </p>
         </div>
+
+        {error && (
+          <div className="rounded-xl px-4 py-3 text-sm" style={{ background: '#FEE2E2', color: '#991B1B' }}>
+            {error}
+          </div>
+        )}
 
         <button
           onClick={save}
