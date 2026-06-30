@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { use } from 'react'
-import { Play } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { MODULE_CONFIG } from '@/lib/config'
 import { BackHeader } from '@/components/BackHeader'
+import RecordingWidget from '@/components/RecordingWidget'
 import type { Task } from '@/lib/types'
 
 const cfg = MODULE_CONFIG.fyzioterapie
@@ -41,18 +41,14 @@ export default function UkolDetailFyzio({ params }: { params: Promise<{ sessionI
     <main className="min-h-screen max-w-sm mx-auto pb-10">
       <BackHeader title={task.title} href="/fyzioterapie" />
 
-      <div className="mx-4 mb-5 rounded-2xl px-4 py-3 flex items-center gap-3" style={{ background: cfg.bg }}>
-        <button
-          className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ background: cfg.medium }}
-        >
-          <Play size={14} className="text-white ml-0.5" />
-        </button>
-        <div>
-          <p className="text-sm font-medium" style={{ color: cfg.dark }}>Nahrávka od fyzioterapeuta</p>
-          <p className="text-xs" style={{ color: cfg.accent }}>nahrávání přijde v další verzi</p>
-        </div>
-      </div>
+      <RecordingWidget
+        taskId={taskId}
+        sessionId={sessionId}
+        accent={cfg.accent}
+        dark={cfg.dark}
+        bg={cfg.bg}
+        medium={cfg.medium}
+      />
 
       <div className="px-4">
         <div className="flex items-center justify-between mb-2">
