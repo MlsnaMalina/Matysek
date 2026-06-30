@@ -149,7 +149,7 @@ export default function LogopediePage() {
           {tasks.length === 0 && (
             <div className="mx-4 mb-5 p-4 rounded-2xl border border-dashed border-gray-200 text-center">
               <p className="text-sm text-gray-400">Žádné úkoly zatím</p>
-              <Link href={`/logopedie/${session.id}/pridat-ukol`} className="text-xs mt-1 block" style={{ color: cfg.accent }}>
+              <Link href={`/logopedie/${session.id}`} className="text-xs mt-1 block" style={{ color: cfg.accent }}>
                 + přidat úkol
               </Link>
             </div>
