@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, Check, Heart } from 'lucide-react'
+import { Plus, Check, Heart, Trash2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { MODULE_CONFIG } from '@/lib/config'
 import { BackHeader } from '@/components/BackHeader'
@@ -56,6 +56,11 @@ export default function LetniPage() {
     const next = !item.is_completed
     await supabase.from('items').update({ is_completed: next }).eq('id', item.id)
     setItems(prev => prev.map(i => i.id === item.id ? { ...i, is_completed: next } : i))
+  }
+
+  async function deleteItem(id: string) {
+    await supabase.from('items').delete().eq('id', id)
+    setItems(prev => prev.filter(i => i.id !== id))
   }
 
   async function toggleFavorite(item: Item) {
@@ -177,6 +182,9 @@ export default function LetniPage() {
                     size={18}
                     style={{ color: item.is_favorite ? cfg.accent : '#d1d5db', fill: item.is_favorite ? cfg.accent : 'none' }}
                   />
+                </button>
+                <button onClick={() => deleteItem(item.id)} className="flex-shrink-0 text-gray-300 active:text-red-400 transition-colors p-1 -mr-1">
+                  <Trash2 size={15} />
                 </button>
               </div>
             </div>

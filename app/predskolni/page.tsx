@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, CheckCircle, Circle, Minus } from 'lucide-react'
+import { Plus, CheckCircle, Circle, Minus, Trash2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { MODULE_CONFIG } from '@/lib/config'
 import { BackHeader } from '@/components/BackHeader'
@@ -51,6 +51,11 @@ export default function PredskolniPage() {
     setNewTitle('')
     setNewDesc('')
     setAdding(false)
+  }
+
+  async function deleteItem(id: string) {
+    await supabase.from('items').delete().eq('id', id)
+    setItems(prev => prev.filter(i => i.id !== id))
   }
 
   async function cycleStatus(item: Item) {
@@ -141,6 +146,9 @@ export default function PredskolniPage() {
                           <p className="text-xs text-gray-400 mt-0.5">{item.description}</p>
                         )}
                       </div>
+                      <button onClick={() => deleteItem(item.id)} className="flex-shrink-0 text-gray-300 active:text-red-400 transition-colors p-1 -mr-1">
+                        <Trash2 size={15} />
+                      </button>
                     </div>
                   ))}
                 </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { use } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Plus, X, ChevronRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -13,11 +14,13 @@ const cfg = MODULE_CONFIG.fyzioterapie
 
 export default function SessionDetailFyzioterapie({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = use(params)
+  const router = useRouter()
   const [session, setSession] = useState<Session | null>(null)
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTitle, setNewTitle] = useState('')
   const [adding, setAdding] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -52,6 +55,11 @@ export default function SessionDetailFyzioterapie({ params }: { params: Promise<
   async function deleteTask(taskId: string) {
     await supabase.from('tasks').delete().eq('id', taskId)
     setTasks(prev => prev.filter(t => t.id !== taskId))
+  }
+
+  async function deleteSession() {
+    await supabase.from('sessions').delete().eq('id', sessionId)
+    router.push('/fyzioterapie')
   }
 
   if (loading) return (
@@ -125,6 +133,39 @@ export default function SessionDetailFyzioterapie({ params }: { params: Promise<
               <Plus size={18} />
             </button>
           </div>
+        </div>
+
+        <div className="mt-8 pt-5 border-t border-gray-100">
+          {!confirmDelete ? (
+            <button
+              onClick={() => setConfirmDelete(true)}
+              className="w-full py-3 rounded-2xl text-sm border"
+              style={{ color: '#ef4444', borderColor: '#fecaca' }}
+            >
+              Smazat schůzku
+            </button>
+          ) : (
+            <div className="rounded-2xl p-4" style={{ background: '#fef2f2', border: '1px solid #fecaca' }}>
+              <p className="text-sm text-center mb-3" style={{ color: '#991b1b' }}>
+                Smazat schůzku i všechny její úkoly?
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setConfirmDelete(false)}
+                  className="flex-1 py-2.5 rounded-xl text-sm text-gray-500 border border-gray-200 bg-white"
+                >
+                  Zrušit
+                </button>
+                <button
+                  onClick={deleteSession}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white"
+                  style={{ background: '#ef4444' }}
+                >
+                  Smazat
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </main>
